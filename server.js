@@ -3,8 +3,8 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 3000;
-
+const port = 3000;
+const ip='0.0.0.0';
 const healthLogs = new Map();
 
 app.use(bodyParser.json());
@@ -172,6 +172,6 @@ app.get('/', (req, res) => {
   });
 });
 
-app.listen(port, () => {
+app.listen(port,ip, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
