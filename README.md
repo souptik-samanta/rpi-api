@@ -1,6 +1,6 @@
 ### **SOUP api**  
 **S**imple, **O**pen, **U**seful, and **P**ractical API  
-mine name is SOUPTIK ( so soup from there too)
+my name is SOUPTIK ( so soup from there too)
 
 SOUPapi is your go-to toolkit for motivation, health tracking, and geolocation. Whether you need a daily dose of inspiration, want to calculate your BMI, or track your health logs, SOUPapi has you covered. It’s lightweight, easy to use, and perfect for developers building wellness apps or anyone looking to stay motivated and healthy.  
 
