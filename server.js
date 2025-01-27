@@ -1,140 +1,177 @@
 const express = require('express');
-const app = express();
-const ChessValidator = require('./chess');
 const axios = require('axios');
-const _ = require('lodash');
+const bodyParser = require('body-parser');
 
-// Middleware
-app.use(express.json());
-app.use(express.static('public'));
+const app = express();
+const port = process.env.PORT || 3000;
 
-// Helper functions
-const randomQuote = () => _.sample([
-  "Checkmate is just a friendly suggestion",
-  "Pawns dream of becoming queens",
-  "Castling: because kings need safe spaces",
-  "En passant: chess' sneakiest move"
-]);
+const healthLogs = new Map();
 
-// Endpoints
-app.get('/api/motivational-nugget', (req, res) => {
-  res.json({
-    quote: randomQuote(),
-    timestamp: new Date().toISOString(),
-    hint: "You've got this! ♟️"
+app.use(bodyParser.json());
+
+const quotes = [
+  "The strongest people are not those who show strength in front of us but those who win battles we know nothing about. - Unknown",
+  "Courage doesn't always roar. Sometimes courage is the quiet voice at the end of the day saying, 'I will try again tomorrow.' - Mary Anne Radmacher",
+  "The human capacity for burden is like bamboo – far more flexible than you'd ever believe at first glance. - Jodi Picoult",
+  "Stars can't shine without darkness. - D.H. Sidebottom",
+  "You never know how strong you are until being strong is your only choice. - Bob Marley",
+  "The soul always knows what to do to heal itself. The challenge is to silence the mind. - Caroline Myss",
+  "Not the load but your reaction to the load breaks you. - Chinese Proverb",
+  "A river cuts through rock not because of its power but because of its persistence. - James N. Watkins",
+  "The broken will always be able to love harder than most. Once you've been in the dark, you learn to appreciate everything that shines. - Zachary K. Douglas",
+  "Healing is not about moving on or 'getting over it,' it's about learning to make peace with our pain. - Unknown"
+];
+
+// Random quote endpoint
+app.get('/quote', (req, res) => {
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  res.json({ 
+    quote: randomQuote
   });
 });
 
-app.get('/api/ip-hunting', async (req, res) => {
-  const { ip } = req.query;
-  
-  if (!ip) {
-    return res.status(400).json({
-      error: "IP parameter required",
-      example: "/api/ip-hunting?ip=8.8.8.8"
-    });
-  }
-
+// BMI Calculator endpoint
+app.get('/bmi', (req, res) => {
   try {
-    const response = await axios.get(`https://ipapi.co/${ip}/json/`);
+    const weight = parseFloat(req.query.w);
+    const height = parseFloat(req.query.h);
+    const units = (req.query.u || 'm').toLowerCase();
+    const gender = (req.query.g || '').toLowerCase();
+    const age = parseInt(req.query.a);
+
+    if (!weight || !height || !age) {
+      throw new Error('Missing parameters. Required: w=weight&h=height&a=age');
+    }
+    
+    let bmi;
+    if (units === 'm') {
+      const heightMeters = height / 100;
+      bmi = weight / (heightMeters ** 2);
+    } else {
+      bmi = (weight * 703) / (height ** 2);
+    }
+
     res.json({
-      ip: response.data.ip,
+      parameters: {
+        weight: weight,
+        height: height,
+        units: units === 'm' ? 'metric (kg/cm)' : 'imperial (lbs/inches)',
+        gender: gender === 'm' ? 'male' : 'female',
+        age: age
+      },
+      bmi: bmi.toFixed(1),
+      note: 'BMI is a general indicator. Consult healthcare professional for proper assessment.'
+    });
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Geolocation 
+app.get('/geolocation', async (req, res) => {
+  try {
+    const ip = req.query.ip || req.ip;
+    const response = await axios.get(`http://ip-api.com/json/${ip}`);
+    
+    if (response.data.status === 'fail') {
+      throw new Error(response.data.message || 'IP geolocation lookup failed');
+    }
+
+    res.json({
+      ip: ip,
+      country: response.data.country,
+      region: response.data.regionName,
       city: response.data.city,
-      region: response.data.region,
-      country: response.data.country_name,
-      emoji_flag: String.fromCodePoint(...[...response.data.country_code.toUpperCase()].map(c => 127397 + c.charCodeAt(0))),
+      isp: response.data.isp,
       coordinates: {
-        latitude: response.data.latitude,
-        longitude: response.data.longitude
+        latitude: response.data.lat,
+        longitude: response.data.lon
       }
     });
+
   } catch (error) {
-    res.status(500).json({
-      error: "IP lookup failed",
-      reason: "Our digital bloodhound fell asleep"
+    res.status(500).json({ 
+      error: error.message,
+      note: 'If no IP is provided, your current IP will be used'
     });
   }
 });
 
-app.get('/api/fen-to-board', (req, res) => {
+app.post('/loghealth', (req, res) => {
   try {
-    const chess = new ChessValidator(decodeURIComponent(req.query.fen));
+    const { n: name, p: password, log } = req.query;
+
+    if (!name || !password || !log) {
+      throw new Error('Missing parameters. Required: n=name&p=password&log=log_entry');
+    }
+
+    if (!healthLogs.has(name)) {
+      healthLogs.set(name, { password, logs: [] });
+    }
+
+    const user = healthLogs.get(name);
+    if (user.password !== password) {
+      throw new Error('Invalid password');
+    }
+
+    user.logs.push({
+      timestamp: new Date().toISOString(),
+      log: log
+    });
+
     res.json({
-      board: chess.getBoard(),
-      fen: chess.getFEN(),
-      turn: chess.whiteToMove ? 'white' : 'black',
-      is_checkmate: chess.isCheckmate()
+      status: 'success',
+      message: 'Health log added successfully',
+      totalLogs: user.logs.length
     });
-  } catch (e) {
-    res.status(400).json({
-      error: "Invalid FEN",
-      tip: "Try something like: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    });
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
-let activeGame = null;
-
-app.post('/api/initBoard', (req, res) => {
+app.get('/getlog', (req, res) => {
   try {
-    activeGame = new ChessValidator(req.body.fen);
+    const { n: name, p: password } = req.query;
+
+    if (!name || !password) {
+      throw new Error('Missing parameters. Required: n=name&p=password');
+    }
+
+    if (!healthLogs.has(name)) {
+      throw new Error('User not found');
+    }
+
+    const user = healthLogs.get(name);
+    if (user.password !== password) {
+      throw new Error('Invalid password');
+    }
+
     res.json({
-      board: activeGame.getBoard(),
-      fen: activeGame.getFEN(),
-      turn: activeGame.whiteToMove ? 'white' : 'black'
+      status: 'success',
+      logs: user.logs,
+      totalLogs: user.logs.length
     });
-  } catch (e) {
-    res.status(400).json({
-      error: "Game initialization failed",
-      reason: "The chess gods are displeased with that FEN"
-    });
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
-app.post('/api/makeMove', (req, res) => {
-  if (!activeGame) {
-    return res.status(400).json({
-      error: "No active game",
-      solution: "Start a game with /api/initBoard first"
-    });
-  }
-
-  try {
-    activeGame.makeMove(req.body.move);
-    res.json({
-      board: activeGame.getBoard(),
-      fen: activeGame.getFEN(),
-      turn: activeGame.whiteToMove ? 'white' : 'black',
-      is_checkmate: activeGame.isCheckmate(),
-      message: _.sample(["Nice move!", "Interesting choice!", "The plot thickens..."])
-    });
-  } catch (e) {
-    res.status(400).json({
-      error: "Invalid move",
-      advice: "Maybe try chess instead of checkers?"
-    });
-  }
-});
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: "Something broke!",
-    emergency_plan: "Offer the chess pieces some coffee and try again"
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    endpoints: {
+      '/quote': 'GET - Random motivational quote',
+      '/bmi?w=WEIGHT&h=HEIGHT&u=UNITS(m/i)&g=GENDER(m/f)&a=AGE': 'GET - Calculate BMI',
+      '/geolocation?ip=IP': 'GET - Get geolocation info for IP',
+      '/loghealth?n=NAME&p=PASSWORD&log=LOG': 'POST - Log health data',
+      '/getlog?n=NAME&p=PASSWORD': 'GET - Get health logs'
+    }
   });
 });
 
-// Start server
-const PORT = 41279;
-const HOST = '0.0.0.0';
-
-app.listen(PORT, HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-  console.log('Endpoints:');
-  console.log(`- GET    /api/motivational-nugget`);
-  console.log(`- GET    /api/ip-hunting?ip=IP_ADDRESS`);
-  console.log(`- GET    /api/fen-to-board?fen=ENCODED_FEN`);
-  console.log(`- POST   /api/initBoard`);
-  console.log(`- POST   /api/makeMove`);
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
