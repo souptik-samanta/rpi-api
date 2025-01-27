@@ -1,4 +1,4 @@
-### **SOUPapi**  
+### **SOUP api**  
 **S**imple, **O**pen, **U**seful, and **P**ractical API  
 mine name is SOUPTIK ( so soup from there too)
 
