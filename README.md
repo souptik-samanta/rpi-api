@@ -1,4 +1,3 @@
----
 
 # SOUP API
 
@@ -6,8 +5,6 @@
 My name is SOUPTIK (so "soup" comes from there too!)
 
 SOUP API is your go-to toolkit for motivation, health tracking, geolocation, email messaging, and URL shortening. Whether you need a daily dose of inspiration, want to calculate your BMI, track your health logs, send emails on the fly, or create short URLs, SOUP API has you covered. It’s lightweight, easy to use, and perfect for developers building wellness apps or anyone looking to stay motivated and healthy.
-
----
 
 ## How to Use
 
