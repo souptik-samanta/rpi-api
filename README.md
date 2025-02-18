@@ -1,18 +1,11 @@
-### **SOUP api**  
-**S**imple, **O**pen, **U**seful, and **P**ractical API  
-my name is SOUPTIK ( so soup from there too)
-
-SOUPapi is your go-to toolkit for motivation, health tracking, and geolocation. Whether you need a daily dose of inspiration, want to calculate your BMI, or track your health logs, SOUPapi has you covered. It’s lightweight, easy to use, and perfect for developers building wellness apps or anyone looking to stay motivated and healthy.  
-
-With SOUPapi, you can:  
-- Get **unique motivational quotes** to brighten your day.  
-- Calculate your **BMI** with support for metric and imperial units.  
-- Retrieve **geolocation** details for any IP address.  (OSNIT :skull:)
-- Log and retrieve **daily health data** securely.  
+---
 
 # SOUP API
 
-Welcome to the **SOUP API**! This API provides motivational quotes, calculates BMI, retrieves geolocation information, and allows users to log and retrieve health data. It’s hosted at `http://37.27.51.34:42493/`.
+**S**imple, **O**pen, **U**seful, and **P**ractical API  
+My name is SOUPTIK (so "soup" comes from there too!)
+
+SOUP API is your go-to toolkit for motivation, health tracking, geolocation, email messaging, and URL shortening. Whether you need a daily dose of inspiration, want to calculate your BMI, track your health logs, send emails on the fly, or create short URLs, SOUP API has you covered. It’s lightweight, easy to use, and perfect for developers building wellness apps or anyone looking to stay motivated and healthy.
 
 ---
 
@@ -76,7 +69,7 @@ http://37.27.51.34:42493/
 ### 3. **GET `/geolocation`**
 - **Description**: Retrieve geolocation information for a given IP address.
 - **Parameters**:
-  - `ip`: IP address (optional, defaults to the requester's IP)
+  - `ip`: IP address (optional, defaults to the requester’s IP)
 - **Example**:
   ```bash
   curl "http://37.27.51.34:42493/geolocation?ip=8.8.8.8"
@@ -85,22 +78,22 @@ http://37.27.51.34:42493/
   ```json
   {
     "ip": "8.8.8.8",
-    "country": "United States",
-    "region": "California",
+    "country": "US",
+    "region": "CA",
     "city": "Mountain View",
-    "isp": "Google LLC",
     "coordinates": {
-      "latitude": 37.4056,
-      "longitude": -122.0775
+      "latitude": 37.386,
+      "longitude": -122.0838
     }
   }
   ```
+  > *Note*: The accuracy of geolocation details depends on the geoip service.
 
 ---
 
 ### 4. **POST `/loghealth`**
 - **Description**: Log daily health data for a user.
-- **Parameters**:
+- **Parameters** (as query parameters):
   - `n`: Username (required)
   - `p`: Password (required)
   - `log`: Health log entry (required)
@@ -121,7 +114,7 @@ http://37.27.51.34:42493/
 
 ### 5. **GET `/getlog`**
 - **Description**: Retrieve health logs for a user.
-- **Parameters**:
+- **Parameters** (as query parameters):
   - `n`: Username (required)
   - `p`: Password (required)
 - **Example**:
@@ -144,20 +137,98 @@ http://37.27.51.34:42493/
 
 ---
 
-## Testing the API
-
-You can test the API using `curl` or tools like [Postman](https://www.postman.com/). Examples are provided above for each endpoint.
+### 6. **POST `/email/:senderEmail/:appPass/:recipientEmail/:message`**
+- **Description**: Send an email using user-supplied credentials. No environment variables needed!
+- **Route Parameters**:
+  - `senderEmail`: The sender’s email address.
+  - `appPass`: The sender’s app-specific password.
+  - `recipientEmail`: The recipient’s email address.
+  - `message`: The text message to send.
+- **Example**:
+  ```bash
+  curl -X POST "http://37.27.51.34:42493/email/sender@example.com/appSpecificPass/recipient@example.com/Hello%20from%20SOUPapi"
+  ```
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "info": { /* nodemailer info response */ }
+  }
+  ```
 
 ---
 
+### 7. **POST `/shorten`**
+- **Description**: Create a shortened URL for any given URL.
+- **Request Body** (JSON):
+  ```json
+  {
+    "url": "https://example.com"
+  }
+  ```
+- **Example**:
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{"url": "https://example.com"}' "http://37.27.51.34:42493/shorten"
+  ```
+- **Response**:
+  ```json
+  {
+    "original_url": "https://example.com",
+    "short_url": "http://37.27.51.34:42493/u/abcd1234",
+    "short_code": "abcd1234"
+  }
+  ```
+
+---
+
+### 8. **GET `/u/:shortCode`**
+- **Description**: Redirect to the original URL based on the provided short code.
+- **Route Parameter**:
+  - `shortCode`: The unique code corresponding to the shortened URL.
+- **Example**:
+  ```bash
+  curl "http://37.27.51.34:42493/u/abcd1234"
+  ```
+- **Behavior**: This endpoint will redirect your browser to the original URL and increment the click count.
+
+---
+
+### 9. **GET `/stats/:shortCode`**
+- **Description**: Retrieve statistics for a shortened URL.
+- **Route Parameter**:
+  - `shortCode`: The unique code corresponding to the shortened URL.
+- **Example**:
+  ```bash
+  curl "http://37.27.51.34:42493/stats/abcd1234"
+  ```
+- **Response**:
+  ```json
+  {
+    "original_url": "https://example.com",
+    "short_code": "abcd1234",
+    "created_at": "2023-10-05T12:34:56.789Z",
+    "clicks": 5
+  }
+  ```
+
+---
+
+## Testing the API
+
+You can test the API using `curl` or tools like [Postman](https://www.postman.com/). The examples provided above demonstrate how to interact with each endpoint.
+
+---
 
 ## Notes
 
-- **Health Logging**: Logs are stored in memory and will be cleared when the server restarts.
-- **BMI Calculation**: Uses WHO standards for BMI categories.
+- **Health Logging**: Health logs are stored in an SQLite database. Please safeguard user credentials.
+- **BMI Calculation**: The BMI provided is a general indicator. For a comprehensive health assessment, consult a professional.
+- **Geolocation**: Results depend on the geoip service. Some details might vary.
+- **Email Sending**: Ensure valid credentials are provided. Use caution when handling sensitive information.
+- **URL Shortener**: Every shortened URL is unique and the API tracks access counts for each.
 
 ---
 
-Enjoy using the API!
+Enjoy using SOUP API – your simple, open, useful, and practical toolkit for a motivated and healthy life!
 
 ---
