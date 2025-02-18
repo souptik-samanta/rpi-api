@@ -1,17 +1,17 @@
+# RPI API
 
-# SOUP API
+**R**apid, **P**ractical, and **I**nnovative API  
+Your lightweight toolkit for motivation, health tracking, geolocation, email messaging, and URL shortening.
 
-**S**imple, **O**pen, **U**seful, and **P**ractical API  
-My name is SOUPTIK (so "soup" comes from there too!)
+RPI API is designed for developers and wellness enthusiasts alike. Whether you need a daily dose of inspiration, want to calculate your BMI, track your health logs, send emails on the fly, or create short URLs, RPI API has you covered.
 
-SOUP API is your go-to toolkit for motivation, health tracking, geolocation, email messaging, and URL shortening. Whether you need a daily dose of inspiration, want to calculate your BMI, track your health logs, send emails on the fly, or create short URLs, SOUP API has you covered. It’s lightweight, easy to use, and perfect for developers building wellness apps or anyone looking to stay motivated and healthy.
+---
 
-## How to Use
+## Base URL
 
-### Base URL
-All endpoints are available at:
+All endpoints are available at:  
 ```
-http://37.27.51.34:42493/
+http://37.27.51.34:41761/
 ```
 
 ---
@@ -22,7 +22,7 @@ http://37.27.51.34:42493/
 - **Description**: Fetch a random motivational quote.
 - **Example**:
   ```bash
-  curl http://37.27.51.34:42493/quote
+  curl http://37.27.51.34:41761/quote
   ```
 - **Response**:
   ```json
@@ -34,7 +34,29 @@ http://37.27.51.34:42493/
 
 ---
 
-### 2. **GET `/bmi`**
+### 2. **POST `/quote`**
+- **Description**: Add a new motivational quote.
+- **Request Body** (JSON):
+  ```json
+  {
+    "quote": "Your new inspirational quote here."
+  }
+  ```
+- **Example**:
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{"quote": "Your new inspirational quote here."}' http://37.27.51.34:41761/quote
+  ```
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "quoteId": 11
+  }
+  ```
+
+---
+
+### 3. **GET `/bmi`**
 - **Description**: Calculate BMI based on weight, height, age, gender, and unit system.
 - **Parameters**:
   - `w`: Weight (required)
@@ -44,7 +66,7 @@ http://37.27.51.34:42493/
   - `a`: Age (required)
 - **Example**:
   ```bash
-  curl "http://37.27.51.34:42493/bmi?w=75&h=180&u=m&g=m&a=30"
+  curl "http://37.27.51.34:41761/bmi?w=75&h=180&u=m&g=m&a=30"
   ```
 - **Response**:
   ```json
@@ -57,19 +79,19 @@ http://37.27.51.34:42493/
       "age": 30
     },
     "bmi": "23.1",
-    "note": "BMI is a general indicator. Consult healthcare professional for proper assessment."
+    "note": "BMI is a general indicator. Consult a healthcare professional for proper assessment."
   }
   ```
 
 ---
 
-### 3. **GET `/geolocation`**
+### 4. **GET `/geolocation`**
 - **Description**: Retrieve geolocation information for a given IP address.
 - **Parameters**:
   - `ip`: IP address (optional, defaults to the requester’s IP)
 - **Example**:
   ```bash
-  curl "http://37.27.51.34:42493/geolocation?ip=8.8.8.8"
+  curl "http://37.27.51.34:41761/geolocation?ip=8.8.8.8"
   ```
 - **Response**:
   ```json
@@ -84,11 +106,11 @@ http://37.27.51.34:42493/
     }
   }
   ```
-  > *Note*: The accuracy of geolocation details depends on the geoip service.
+  > *Note*: Geolocation details depend on the geoip service's accuracy.
 
 ---
 
-### 4. **POST `/loghealth`**
+### 5. **POST `/loghealth`**
 - **Description**: Log daily health data for a user.
 - **Parameters** (as query parameters):
   - `n`: Username (required)
@@ -96,7 +118,7 @@ http://37.27.51.34:42493/
   - `log`: Health log entry (required)
 - **Example**:
   ```bash
-  curl -X POST "http://37.27.51.34:42493/loghealth?n=john&p=1234&log=Felt%20great%20today"
+  curl -X POST "http://37.27.51.34:41761/loghealth?n=john&p=1234&log=Felt%20great%20today"
   ```
 - **Response**:
   ```json
@@ -109,14 +131,14 @@ http://37.27.51.34:42493/
 
 ---
 
-### 5. **GET `/getlog`**
+### 6. **GET `/getlog`**
 - **Description**: Retrieve health logs for a user.
 - **Parameters** (as query parameters):
   - `n`: Username (required)
   - `p`: Password (required)
 - **Example**:
   ```bash
-  curl "http://37.27.51.34:42493/getlog?n=john&p=1234"
+  curl "http://37.27.51.34:41761/getlog?n=john&p=1234"
   ```
 - **Response**:
   ```json
@@ -134,16 +156,17 @@ http://37.27.51.34:42493/
 
 ---
 
-### 6. **POST `/email/:senderEmail/:appPass/:recipientEmail/:message`**
-- **Description**: Send an email using user-supplied credentials. No environment variables needed!
+### 7. **POST `/email/:senderEmail/:appPass/:recipientEmail/:message`**
+- **Description**: Send an email using user-supplied credentials.  
+  This endpoint sends an email without requiring any environment variables.
 - **Route Parameters**:
   - `senderEmail`: The sender’s email address.
   - `appPass`: The sender’s app-specific password.
   - `recipientEmail`: The recipient’s email address.
-  - `message`: The text message to send.
+  - `message`: The text message to be sent.
 - **Example**:
   ```bash
-  curl -X POST "http://37.27.51.34:42493/email/sender@example.com/appSpecificPass/recipient@example.com/Hello%20from%20SOUPapi"
+  curl -X POST "http://37.27.51.34:41761/email/sender@example.com/appSpecificPass/recipient@example.com/Hello%20from%20RPI%20API"
   ```
 - **Response**:
   ```json
@@ -155,8 +178,8 @@ http://37.27.51.34:42493/
 
 ---
 
-### 7. **POST `/shorten`**
-- **Description**: Create a shortened URL for any given URL.
+### 8. **POST `/shorten`**
+- **Description**: Create a shortened URL for a given original URL.
 - **Request Body** (JSON):
   ```json
   {
@@ -165,38 +188,38 @@ http://37.27.51.34:42493/
   ```
 - **Example**:
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"url": "https://example.com"}' "http://37.27.51.34:42493/shorten"
+  curl -X POST -H "Content-Type: application/json" -d '{"url": "https://example.com"}' http://37.27.51.34:41761/shorten
   ```
 - **Response**:
   ```json
   {
     "original_url": "https://example.com",
-    "short_url": "http://37.27.51.34:42493/u/abcd1234",
+    "short_url": "http://37.27.51.34:41761/u/abcd1234",
     "short_code": "abcd1234"
   }
   ```
 
 ---
 
-### 8. **GET `/u/:shortCode`**
+### 9. **GET `/u/:shortCode`**
 - **Description**: Redirect to the original URL based on the provided short code.
 - **Route Parameter**:
   - `shortCode`: The unique code corresponding to the shortened URL.
 - **Example**:
   ```bash
-  curl "http://37.27.51.34:42493/u/abcd1234"
+  curl "http://37.27.51.34:41761/u/abcd1234"
   ```
-- **Behavior**: This endpoint will redirect your browser to the original URL and increment the click count.
+- **Behavior**: This endpoint will redirect your browser to the original URL and increment its click count.
 
 ---
 
-### 9. **GET `/stats/:shortCode`**
+### 10. **GET `/stats/:shortCode`**
 - **Description**: Retrieve statistics for a shortened URL.
 - **Route Parameter**:
   - `shortCode`: The unique code corresponding to the shortened URL.
 - **Example**:
   ```bash
-  curl "http://37.27.51.34:42493/stats/abcd1234"
+  curl "http://37.27.51.34:41761/stats/abcd1234"
   ```
 - **Response**:
   ```json
@@ -212,20 +235,17 @@ http://37.27.51.34:42493/
 
 ## Testing the API
 
-You can test the API using `curl` or tools like [Postman](https://www.postman.com/). The examples provided above demonstrate how to interact with each endpoint.
+You can test the API using command-line tools like `curl` or applications like [Postman](https://www.postman.com/). The examples above provide guidance on how to interact with each endpoint.
 
 ---
 
 ## Notes
 
-- **Health Logging**: Health logs are stored in an SQLite database. Please safeguard user credentials.
-- **BMI Calculation**: The BMI provided is a general indicator. For a comprehensive health assessment, consult a professional.
-- **Geolocation**: Results depend on the geoip service. Some details might vary.
-- **Email Sending**: Ensure valid credentials are provided. Use caution when handling sensitive information.
-- **URL Shortener**: Every shortened URL is unique and the API tracks access counts for each.
+- **Health Logging**: Health logs are stored in an SQLite database. User credentials should be handled securely.
+- **BMI Calculation**: The BMI value provided is a general indicator; for a comprehensive health assessment, please consult a professional.
+- **Geolocation**: The accuracy of the geolocation information is dependent on the underlying geoip service.
+- **Email Sending**: Ensure you provide valid email credentials. This endpoint uses nodemailer to send emails.
+- **URL Shortener**: Each shortened URL is unique, and the API tracks the number of clicks for each.
 
 ---
 
-Enjoy using SOUP API – your simple, open, useful, and practical toolkit for a motivated and healthy life!
-
----
