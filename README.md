@@ -1,6 +1,6 @@
 # RPI API
 
-**R**apid, **P**ractical, and **I**nnovative API  
+**R**apid, **P**ractical, and **I**nnovative API
 Your lightweight toolkit for motivation, health tracking, geolocation, email messaging, and URL shortening.
 
 RPI API is designed for developers and wellness enthusiasts alike. Whether you need a daily dose of inspiration, want to calculate your BMI, track your health logs, send emails on the fly, or create short URLs, RPI API has you covered.
@@ -9,9 +9,10 @@ RPI API is designed for developers and wellness enthusiasts alike. Whether you n
 
 ## Base URL
 
-All endpoints are available at:  
+All endpoints are available at:
+
 ```
-http://37.27.51.34:41761/
+https://rpi-api-production.up.railway.app/
 ```
 
 ---
@@ -19,12 +20,15 @@ http://37.27.51.34:41761/
 ## API Endpoints
 
 ### 1. **GET `/quote`**
-- **Description**: Fetch a random motivational quote.
-- **Example**:
+
+* **Description**: Fetch a random motivational quote.
+* **Example**:
+
   ```bash
-  curl http://37.27.51.34:41761/quote
+  curl https://rpi-api-production.up.railway.app/quote
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "quote": "The strongest people are not those who show strength in front of us but those who win battles we know nothing about. - Unknown",
@@ -35,18 +39,22 @@ http://37.27.51.34:41761/
 ---
 
 ### 2. **POST `/quote`**
-- **Description**: Add a new motivational quote.
-- **Request Body** (JSON):
+
+* **Description**: Add a new motivational quote.
+* **Request Body** (JSON):
+
   ```json
   {
     "quote": "Your new inspirational quote here."
   }
   ```
-- **Example**:
+* **Example**:
+
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"quote": "Your new inspirational quote here."}' http://37.27.51.34:41761/quote
+  curl -X POST -H "Content-Type: application/json" -d '{"quote": "Your new inspirational quote here."}' https://rpi-api-production.up.railway.app/quote
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "status": "success",
@@ -57,18 +65,22 @@ http://37.27.51.34:41761/
 ---
 
 ### 3. **GET `/bmi`**
-- **Description**: Calculate BMI based on weight, height, age, gender, and unit system.
-- **Parameters**:
-  - `w`: Weight (required)
-  - `h`: Height (required)
-  - `u`: Unit system (`m` for metric, `i` for imperial) (optional, default: `m`)
-  - `g`: Gender (`m` for male, `f` for female) (optional)
-  - `a`: Age (required)
-- **Example**:
+
+* **Description**: Calculate BMI based on weight, height, age, gender, and unit system.
+* **Parameters**:
+
+  * `w`: Weight (required)
+  * `h`: Height (required)
+  * `u`: Unit system (`m` for metric, `i` for imperial) (optional, default: `m`)
+  * `g`: Gender (`m` for male, `f` for female) (optional)
+  * `a`: Age (required)
+* **Example**:
+
   ```bash
-  curl "http://37.27.51.34:41761/bmi?w=75&h=180&u=m&g=m&a=30"
+  curl "https://rpi-api-production.up.railway.app/bmi?w=75&h=180&u=m&g=m&a=30"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "parameters": {
@@ -86,14 +98,18 @@ http://37.27.51.34:41761/
 ---
 
 ### 4. **GET `/geolocation`**
-- **Description**: Retrieve geolocation information for a given IP address.
-- **Parameters**:
-  - `ip`: IP address (optional, defaults to the requester’s IP)
-- **Example**:
+
+* **Description**: Retrieve geolocation information for a given IP address.
+* **Parameters**:
+
+  * `ip`: IP address (optional, defaults to the requester’s IP)
+* **Example**:
+
   ```bash
-  curl "http://37.27.51.34:41761/geolocation?ip=8.8.8.8"
+  curl "https://rpi-api-production.up.railway.app/geolocation?ip=8.8.8.8"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "ip": "8.8.8.8",
@@ -106,21 +122,24 @@ http://37.27.51.34:41761/
     }
   }
   ```
-  > *Note*: Geolocation details depend on the geoip service's accuracy.
 
 ---
 
 ### 5. **POST `/loghealth`**
-- **Description**: Log daily health data for a user.
-- **Parameters** (as query parameters):
-  - `n`: Username (required)
-  - `p`: Password (required)
-  - `log`: Health log entry (required)
-- **Example**:
+
+* **Description**: Log daily health data for a user.
+* **Parameters** (as query parameters):
+
+  * `n`: Username (required)
+  * `p`: Password (required)
+  * `log`: Health log entry (required)
+* **Example**:
+
   ```bash
-  curl -X POST "http://37.27.51.34:41761/loghealth?n=john&p=1234&log=Felt%20great%20today"
+  curl -X POST "https://rpi-api-production.up.railway.app/loghealth?n=john&p=1234&log=Felt%20great%20today"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "status": "success",
@@ -132,15 +151,19 @@ http://37.27.51.34:41761/
 ---
 
 ### 6. **GET `/getlog`**
-- **Description**: Retrieve health logs for a user.
-- **Parameters** (as query parameters):
-  - `n`: Username (required)
-  - `p`: Password (required)
-- **Example**:
+
+* **Description**: Retrieve health logs for a user.
+* **Parameters** (as query parameters):
+
+  * `n`: Username (required)
+  * `p`: Password (required)
+* **Example**:
+
   ```bash
-  curl "http://37.27.51.34:41761/getlog?n=john&p=1234"
+  curl "https://rpi-api-production.up.railway.app/getlog?n=john&p=1234"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "status": "success",
@@ -157,18 +180,22 @@ http://37.27.51.34:41761/
 ---
 
 ### 7. **POST `/email/:senderEmail/:appPass/:recipientEmail/:message`**
-- **Description**: Send an email using user-supplied credentials.  
+
+* **Description**: Send an email using user-supplied credentials.
   This endpoint sends an email without requiring any environment variables.
-- **Route Parameters**:
-  - `senderEmail`: The sender’s email address.
-  - `appPass`: The sender’s app-specific password.
-  - `recipientEmail`: The recipient’s email address.
-  - `message`: The text message to be sent.
-- **Example**:
+* **Route Parameters**:
+
+  * `senderEmail`: The sender’s email address.
+  * `appPass`: The sender’s app-specific password.
+  * `recipientEmail`: The recipient’s email address.
+  * `message`: The text message to be sent.
+* **Example**:
+
   ```bash
-  curl -X POST "http://37.27.51.34:41761/email/sender@example.com/appSpecificPass/recipient@example.com/Hello%20from%20RPI%20API"
+  curl -X POST "https://rpi-api-production.up.railway.app/email/sender@example.com/appSpecificPass/recipient@example.com/Hello%20from%20RPI%20API"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "status": "success",
@@ -179,22 +206,26 @@ http://37.27.51.34:41761/
 ---
 
 ### 8. **POST `/shorten`**
-- **Description**: Create a shortened URL for a given original URL.
-- **Request Body** (JSON):
+
+* **Description**: Create a shortened URL for a given original URL.
+* **Request Body** (JSON):
+
   ```json
   {
     "url": "https://example.com"
   }
   ```
-- **Example**:
+* **Example**:
+
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"url": "https://example.com"}' http://37.27.51.34:41761/shorten
+  curl -X POST -H "Content-Type: application/json" -d '{"url": "https://example.com"}' https://rpi-api-production.up.railway.app/shorten
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "original_url": "https://example.com",
-    "short_url": "http://37.27.51.34:41761/u/abcd1234",
+    "short_url": "https://rpi-api-production.up.railway.app/u/abcd1234",
     "short_code": "abcd1234"
   }
   ```
@@ -202,26 +233,33 @@ http://37.27.51.34:41761/
 ---
 
 ### 9. **GET `/u/:shortCode`**
-- **Description**: Redirect to the original URL based on the provided short code.
-- **Route Parameter**:
-  - `shortCode`: The unique code corresponding to the shortened URL.
-- **Example**:
+
+* **Description**: Redirect to the original URL based on the provided short code.
+* **Route Parameter**:
+
+  * `shortCode`: The unique code corresponding to the shortened URL.
+* **Example**:
+
   ```bash
-  curl "http://37.27.51.34:41761/u/abcd1234"
+  curl "https://rpi-api-production.up.railway.app/u/abcd1234"
   ```
-- **Behavior**: This endpoint will redirect your browser to the original URL and increment its click count.
+* **Behavior**: This endpoint will redirect your browser to the original URL and increment its click count.
 
 ---
 
 ### 10. **GET `/stats/:shortCode`**
-- **Description**: Retrieve statistics for a shortened URL.
-- **Route Parameter**:
-  - `shortCode`: The unique code corresponding to the shortened URL.
-- **Example**:
+
+* **Description**: Retrieve statistics for a shortened URL.
+* **Route Parameter**:
+
+  * `shortCode`: The unique code corresponding to the shortened URL.
+* **Example**:
+
   ```bash
-  curl "http://37.27.51.34:41761/stats/abcd1234"
+  curl "https://rpi-api-production.up.railway.app/stats/abcd1234"
   ```
-- **Response**:
+* **Response**:
+
   ```json
   {
     "original_url": "https://example.com",
@@ -233,19 +271,12 @@ http://37.27.51.34:41761/
 
 ---
 
-## Testing the API
-
-You can test the API using command-line tools like `curl` or applications like [Postman](https://www.postman.com/). The examples above provide guidance on how to interact with each endpoint.
-
----
-
 ## Notes
 
-- **Health Logging**: Health logs are stored in an SQLite database. User credentials should be handled securely.
-- **BMI Calculation**: The BMI value provided is a general indicator; for a comprehensive health assessment, please consult a professional.
-- **Geolocation**: The accuracy of the geolocation information is dependent on the underlying geoip service.
-- **Email Sending**: Ensure you provide valid email credentials. This endpoint uses nodemailer to send emails.
-- **URL Shortener**: Each shortened URL is unique, and the API tracks the number of clicks for each.
-
----
+* **Health Logging**: Health logs are stored in an SQLite database. User credentials should be handled securely.
+* **BMI Calculation**: The BMI value provided is a general indicator; for a comprehensive health assessment, please consult a professional.
+* **Geolocation**: The accuracy of the geolocation information is dependent on the underlying geoip service.
+* **Email Sending**: Ensure you provide valid email credentials. This endpoint uses nodemailer to send emails.
+* **URL Shortener**: Each shortened URL is unique, and the API tracks the number of clicks for each.
+  
 
